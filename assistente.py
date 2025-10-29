@@ -6,24 +6,30 @@ import pyaudio
 import wave
 import os
 import json
-# from lampada import * # MODIFICADO: Removido
-# from som import * # MODIFICADO: Removido
-from tutor import * # MODIFICADO: Adicionado seu novo atuador
+import torch # Adicionado para o __main__
 from threading import Thread
-# from api import * # Mantido (mesmo estando vazio)
 from flask import Flask, Response, request, send_from_directory
-import torch # NOVO: Importado para o 'if __name__ == "__main__"'
+
+# --- NOVOS ATUADORES ---
+from plano import *
+from revisao import *
+from tarefa import *
+from resumo import *
+# --- ATUADORES ANTIGOS REMOVIDOS ---
+# from lampada import *
+# from som import *
 
 LINGUAGEM = "portuguese"
 FORMATO = pyaudio.paInt16
 CANAIS = 1
 AMOSTRAS = 1024
 TEMPO_GRAVACAO = 5
+# Use os caminhos exatos do seu computador
 CAMINHO_AUDIO_FALAS = "C:\\Users\\rebec\\OneDrive\\Documentos\\BSI\\Semestre 6\\Inteligencia Artificial\\assistente virtual\\temp"
 CONFIGURACOES = "C:\\Users\\rebec\\OneDrive\\Documentos\\BSI\\Semestre 6\\Inteligencia Artificial\\assistente virtual\\config.json"
 MODO_LINHA_DE_COMANDO = 1
 MODO_WEB = 2
-MODO_DE_FUNCIONAMETO = MODO_LINHA_DE_COMANDO # MODIFICADO: Mude para linha de comando para testar mais fácil
+MODO_DE_FUNCIONAMETO = MODO_LINHA_DE_COMANDO # Mude para MODO_WEB quando precisar
 
 def iniciar(dispositivo):
     # Esta função está OK. Ela carrega o modelo e o NOVO config.json
@@ -42,19 +48,29 @@ def iniciar(dispositivo):
     return modelo_iniciado, processador, modelo, gravador, palavras_de_parada, acoes
 
 def iniciar_atuadores():
-    # MODIFICADO: Aponta para seu novo atuador 'tutor'
+    # MODIFICADO: Carrega os 4 novos atuadores
     atuadores = []
     
-    if iniciar_tutor(): # Função do seu tutor.py
-        atuadores.append({"nome": "Tutor de Estudos",
-                         "atuacao": atuar_sobre_tutor}) # Função do seu tutor.py
-    
+    if iniciar_plano():
+        atuadores.append({"nome": "Plano",
+                         "atuacao": atuar_sobre_plano})
+                         
+    if iniciar_revisao():
+        atuadores.append({"nome": "Revisão",
+                         "atuacao": atuar_sobre_revisao})
+
+    if iniciar_tarefa():
+        atuadores.append({"nome": "Tarefa",
+                         "atuacao": atuar_sobre_tarefa})
+                         
+    if iniciar_resumo():
+        atuadores.append({"nome": "Resumo",
+                         "atuacao": atuar_sobre_resumo})
+                         
     return atuadores
 
-
 # --- Funções Inalteradas (capturar_fala, gravar_fala, processar_transcricao, validar_comando) ---
-# Estas funções podem ser mantidas exatamente como estão no seu original.
-# O 'validar_comando' funciona perfeitamente com seu novo JSON.
+# Estas funções são genéricas e funcionam perfeitamente com seu novo tema.
 def capturar_fala(gravador):
     gravacao = gravador.open(format=FORMATO, channels=CANAIS, rate=TAXA_AMOSTRAGEM, input=True, frames_per_buffer=AMOSTRAS)
     print("fale alguma coisa...")
@@ -99,25 +115,17 @@ def validar_comando(comando, acoes):
                     valido = True
                     break
     return valido, acao, dispositivo
-
 # --- Fim das Funções Inalteradas ---
 
 
 def atuar(acao, dispositivo, atuadores, comando_completo):
     # MODIFICADO: Adicionado 'comando_completo'
-    # Esta é a mudança mais importante.
-    # Precisamos passar a lista inteira de tokens para o atuador.
-    """
-    Parâmetros:
-    acao: 'adicionar'
-    dispositivo: 'revisão'
-    atuadores: Lista de atuadores iniciados
-    comando_completo: ['adicionar', 'revisão', 'matemática', '18', 'horas']
-    """
+    # Esta função agora envia todos os tokens (ex: 'matemática 18 horas')
+    # para TODOS os atuadores. Cada atuador decidirá se deve agir.
     for atuador in atuadores:
-        print(f"enviando comando para {atuador['nome']}")
+        print(f"Enviando comando para {atuador['nome']}")
         
-        # MODIFICADO: Adicionado 'comando_completo' aos args da Thread
+        # MODIFICADO: Passa 'acao', 'dispositivo', e 'comando_completo'
         atuacao = Thread(target=atuador["atuacao"], args=[acao, dispositivo, comando_completo])
         atuacao.start()
         
@@ -125,7 +133,7 @@ def atuar(acao, dispositivo, atuadores, comando_completo):
 ########## linha de comando ##########
 
 def ativar_linha_de_comando():
-    # Esta função é chamada se MODO_DE_FUNCIONAMETO = MODO_LINHA_DE_COMANDO
+    # MODIFICADO: Passa 'comando' (tokens) para a função 'atuar'
     while True:
         fala = capturar_fala(gravador)
         gravado, arquivo = gravar_fala(gravador, fala)
@@ -138,17 +146,18 @@ def ativar_linha_de_comando():
                     
             comando = processar_transcricao(transcricao, palavras_de_parada)      
             
-            print(f"comando: {comando}")
+            print(f"comando tokenizado: {comando}")
             
             valido, acao, dispositivo_alvo = validar_comando(comando, acoes)
             
             if valido:
                 print(f"executando {acao} sobre {dispositivo_alvo}")
-                
-                # MODIFICADO: Passa o 'comando' completo para o 'atuar'
+                # MODIFICADO: Passa 'comando' (a lista de tokens) como 'comando_completo'
                 atuar(acao, dispositivo_alvo, atuadores, comando)    
             else:
                 print("comando inválido")
+            
+            # A chamada 'atuar' foi movida para dentro do 'if valido:'
 
         else:
             print("ocorreu um erro gravando a fala")

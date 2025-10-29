@@ -1,0 +1,20 @@
+{
+    "acoes": [
+        {
+            "nome": "mostrar",
+            "dispositivos": ["plano"]
+        },
+        {
+            "nome": "adicionar",
+            "dispositivos": ["revisão"]
+        },
+        {
+            "nome": "marcar",
+            "dispositivos": ["tarefa"]
+        },
+        {
+            "nome": "gerar",
+            "dispositivos": ["resumo"]
+        }
+    ]
+}

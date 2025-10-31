@@ -4,10 +4,9 @@ def iniciar_tarefa():
     return True
 
 def atuar_sobre_tarefa(acao, dispositivo, comando_completo):
-   
-    if acao == "marcar" and dispositivo == "tarefa":
-        
-      
+
+    if (acao == "marcar" or acao == "marca") and dispositivo == "tarefa":
+
         try:
          
             tarefa = " ".join(comando_completo[2:-1]) 

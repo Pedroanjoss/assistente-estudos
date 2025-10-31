@@ -5,7 +5,7 @@ def iniciar_plano():
 
 def atuar_sobre_plano(acao, dispositivo, comando_completo):
 
-    if (acao == "mostrar" or acao == "mostra") and dispositivo == "plano":
+    if (acao == "mostrar" or acao == "mostra") and (dispositivo == "plano" or dispositivo == "planos"):
 
         print(f"\n[ATUADOR PLANO]: Executando '{acao} {dispositivo}'")
         print("  -> MOSTRANDO PLANO DE HOJE:\n     - 09:00: Aula de Redes Neurais\n     - 11:00: Estudar Cálculo")

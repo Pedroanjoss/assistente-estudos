@@ -22,6 +22,7 @@ python -m venv .venv
 2. Ative o Ambiente Virtual
 
 .\.venv\Scripts\activate
+
 (O prompt do seu terminal deve agora mostrar (.venv) no início)
 
 3. Instale as Dependências Python

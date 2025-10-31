@@ -1,3 +1,4 @@
+import nltk 
 from nltk import word_tokenize, corpus
 from inicializador_modelo import *
 from transcritor import *
@@ -6,33 +7,28 @@ import pyaudio
 import wave
 import os
 import json
-import torch # Adicionado para o __main__
+import torch 
 from threading import Thread
 
 
-# --- NOVOS ATUADORES ---
+
 from plano import *
 from revisao import *
 from tarefa import *
 from resumo import *
-# --- ATUADORES ANTIGOS REMOVIDOS ---
-# from lampada import *
-# from som import *
 
 LINGUAGEM = "portuguese"
 FORMATO = pyaudio.paInt16
 CANAIS = 1
 AMOSTRAS = 1024
 TEMPO_GRAVACAO = 5
-# Use os caminhos exatos do seu computador
-CAMINHO_AUDIO_FALAS = "C:\\Users\\rebec\\OneDrive\\Documentos\\BSI\\Semestre 6\\Inteligencia Artificial\\assistente virtual\\temp"
-CONFIGURACOES = "C:\\Users\\rebec\\OneDrive\\Documentos\\BSI\\Semestre 6\\Inteligencia Artificial\\assistente virtual\\config.json"
-MODO_LINHA_DE_COMANDO = 1
-MODO_WEB = 2
-MODO_DE_FUNCIONAMETO = MODO_LINHA_DE_COMANDO # Mude para MODO_WEB quando precisar
+
+CAMINHO_AUDIO_FALAS = "C:\\Users\\Pedro\\Documents\\atividade\\assistente-estudos\\temp"
+CONFIGURACOES = "C:\\Users\\Pedro\\Documents\\atividade\\assistente-estudos\\config.json"
+ 
 
 def iniciar(dispositivo):
-    # Esta função está OK. Ela carrega o modelo e o NOVO config.json
+   
     modelo_iniciado, processador, modelo = iniciar_modelo(MODELOS[0], dispositivo)
 
     gravador = pyaudio.PyAudio()
@@ -48,7 +44,7 @@ def iniciar(dispositivo):
     return modelo_iniciado, processador, modelo, gravador, palavras_de_parada, acoes
 
 def iniciar_atuadores():
-    # MODIFICADO: Carrega os 4 novos atuadores
+   
     atuadores = []
     
     if iniciar_plano():
@@ -69,8 +65,7 @@ def iniciar_atuadores():
                          
     return atuadores
 
-# --- Funções Inalteradas (capturar_fala, gravar_fala, processar_transcricao, validar_comando) ---
-# Estas funções são genéricas e funcionam perfeitamente com seu novo tema.
+
 def capturar_fala(gravador):
     gravacao = gravador.open(format=FORMATO, channels=CANAIS, rate=TAXA_AMOSTRAGEM, input=True, frames_per_buffer=AMOSTRAS)
     print("fale alguma coisa...")
@@ -98,7 +93,7 @@ def gravar_fala(gravador, fala):
 
 def processar_transcricao(transcricao, palavras_de_parada):
     comando = []
-    tokens = word_tokenize(transcricao)
+    tokens = word_tokenize(transcricao, language=LINGUAGEM)
     for token in tokens:
         if token not in palavras_de_parada:
             comando.append(token)
@@ -115,25 +110,23 @@ def validar_comando(comando, acoes):
                     valido = True
                     break
     return valido, acao, dispositivo
-# --- Fim das Funções Inalteradas ---
+
 
 
 def atuar(acao, dispositivo, atuadores, comando_completo):
-    # MODIFICADO: Adicionado 'comando_completo'
-    # Esta função agora envia todos os tokens (ex: 'matemática 18 horas')
-    # para TODOS os atuadores. Cada atuador decidirá se deve agir.
+   
     for atuador in atuadores:
         print(f"Enviando comando para {atuador['nome']}")
         
-        # MODIFICADO: Passa 'acao', 'dispositivo', e 'comando_completo'
+       
         atuacao = Thread(target=atuador["atuacao"], args=[acao, dispositivo, comando_completo])
         atuacao.start()
         
         
-########## linha de comando ##########
+
 
 def ativar_linha_de_comando():
-    # MODIFICADO: Passa 'comando' (tokens) para a função 'atuar'
+   
     while True:
         fala = capturar_fala(gravador)
         gravado, arquivo = gravar_fala(gravador, fala)
@@ -152,12 +145,12 @@ def ativar_linha_de_comando():
             
             if valido:
                 print(f"executando {acao} sobre {dispositivo_alvo}")
-                # MODIFICADO: Passa 'comando' (a lista de tokens) como 'comando_completo'
+              
                 atuar(acao, dispositivo_alvo, atuadores, comando)    
             else:
                 print("comando inválido")
             
-            # A chamada 'atuar' foi movida para dentro do 'if valido:'
+          
 
         else:
             print("ocorreu um erro gravando a fala")
@@ -168,14 +161,11 @@ if __name__ == "__main__":
     iniciado, processador, modelo, gravador, palavras_de_parada, acoes = iniciar(dispositivo)
 
     if iniciado:
-        # Esta função agora carrega seus 4 atuadores
+      
         atuadores = iniciar_atuadores()
         
-        if MODO_DE_FUNCIONAMETO == MODO_LINHA_DE_COMANDO:
-            ativar_linha_de_comando()
-        elif MODO_DE_FUNCIONAMETO == MODO_WEB:
-            ativar_web(dispositivo, modelo, processador, palavras_de_parada, acoes, atuadores)
-        else:
-            print("modo de funcionamento não implementado")        
+       
+        ativar_linha_de_comando()
+             
     else:
         print("ocorre um erro de inicialização")

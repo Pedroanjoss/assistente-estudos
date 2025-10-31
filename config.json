@@ -2,7 +2,7 @@
     "acoes": [
         {
             "nome": "mostrar",
-            "dispositivos": ["plano"]
+            "dispositivos": ["plano", "planos"]
         },
         {
             "nome": "adicionar",
@@ -10,10 +10,14 @@
         },
         {
             "nome": "marcar",
-            "dispositivos": ["tarefa"]
+            "dispositivos": ["tarefa", "tarefas"]
         },
         {
             "nome": "gerar",
+            "dispositivos": ["resumo"]
+        },
+        {
+            "nome": "fazer",
             "dispositivos": ["resumo"]
         }
     ]

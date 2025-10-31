@@ -1,5 +1,6 @@
 transformers
-torchaudio==2.9.0
+# torchcodec==0.6.0
+torchaudio==2.6.0
 PySoundFile
 soundfile
 pyaudio # no linux pode precisar: sudo apt install portaudio19-dev python3-pyaudio

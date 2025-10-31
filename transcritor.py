@@ -6,12 +6,20 @@ MODELO = "lgris/wav2vec2-large-xlsr-open-brazilian-portuguese-v2"
 
 AUDIOS = [
     {
-        "comando": "ligar a lâmpada",
-        "wav": "/misc/ifba/workspaces/inteligencia artificial/reconhecimento de fala/audios/ligar lampada.wav"
+        "comando": "Mostrar plano de estudos",
+        "wav": "C:\\Users\\Pedro\\Documents\\atividade\\assistente-estudos\\audios\\plano-estudo.wav"
     },
     {
-        "comando": "desligar a lâmpada",
-        "wav": "/misc/ifba/workspaces/inteligencia artificial/reconhecimento de fala/audios/desligar lampada.wav"
+        "comando": "Adicionar revisão",
+        "wav": "C:\\Users\\Pedro\\Documents\\atividade\\assistente-estudos\\audios\\adicionar-revisao.wav"
+    },
+    {
+        "comando": "Marcar tarefa",
+        "wav": "C:\\Users\\Pedro\\Documents\\atividade\\assistente-estudos\\audios\\marcar-tarefa.wav"
+    },
+    {
+        "comando": "Gerar resumo",
+        "wav": "C:\\Users\\Pedro\\Documents\\atividade\\assistente-estudos\\audios\\gerar-resumo.wav"
     }
 ]
 

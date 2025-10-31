@@ -12,6 +12,10 @@
             "nome": "marcar",
             "dispositivos": ["tarefa", "tarefas"]
         },
+         {
+            "nome": "marca",
+            "dispositivos": ["tarefa", "tarefas"]
+        },
         {
             "nome": "gerar",
             "dispositivos": ["resumo"]

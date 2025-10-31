@@ -49,7 +49,7 @@ class TestesTutor(unittest.TestCase):
         self._executar_teste_comando(ADD_REVISAO, "adicionar", "revisão")
         
     def testar_04_marcar_tarefa(self):
-        self._executar_teste_comando(MARCAR_TAREFA, "marcar", "tarefa")
+        self._executar_teste_comando(MARCAR_TAREFA, "marca", "tarefa")
         
     def testar_05_gerar_resumo(self):
         self._executar_teste_comando(GERAR_RESUMO, "gerar", "resumo")
